@@ -11,7 +11,7 @@ const accessLogStream = fs.createWriteStream(path.join(__dirname, 'log.txt'), {f
 // setup the logger
 app.use(morgan('combined', {stream: accessLogStream}));
 
-const movies = [
+const topMovies = [
     { title: "The Shawshank Redemption", director: "Frank Darabont" },
     { title: "The Godfather", director: "Francis Ford Coppola" },
     { title: "The Dark Knight", director: "Christopher Nolan" },
