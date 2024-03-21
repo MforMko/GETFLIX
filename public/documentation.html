@@ -4,9 +4,101 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Documentation movie api</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
     <h1>myFlix</h1>
     <p>This web app will allow users to access information about movies, directors and film genres. Users will be able to sign up, update their personal information and create a list of their favourite movies.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Business Logic</th>
+                <th>URL</th>
+                <th>HTTP Method</th>
+                <th>Request Body Data Format</th>
+                <th>Response Body Data Format</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Return a list of all movies</td>
+                <td>/movies</td>
+                <td>GET</td>
+                <td>None</td>
+                <td>A JSON object holding data about all the movies</td>
+            </tr>
+            <tr>
+                <td>Return data of a single movie by title</td>
+                <td>/movies/[title]</td>
+                <td>GET</td>
+                <td>None</td>
+                <td>A JSON object holding all data about a single movie</td>
+            </tr>
+            <tr>
+                <td>Return data (description) about a genre by name (e.g. “Thriller”)</td>
+                <td>/movies/[genre]/[name]</td>
+                <td>GET</td>
+                <td>None</td>
+                <td>A JSON object holding all data about a genre (e.g., “Thriller”)</td>
+            </tr>
+            <tr>
+                <td>Return data (bio, birth year, death year) about a director by name</td>
+                <td>/movies/[director]/[name]</td>
+                <td>GET</td>
+                <td>None</td>
+                <td>A JSON object holding all data about a director</td>
+            </tr>
+            <tr>
+                <td>Register a new user</td>
+                <td>/users/</td>
+                <td>POST</td>
+                <td>A JSON object holding data about the new user being added.<br>Structured like:<br>{<br>name: “Phil Dagaps”,<br>favourite movies: []</td>
+                <td>A JSON object holding data about the new user being added with an ID.<br>Structured like:<br>{<br>id: 1<br>name: “Phil Dagaps”,<br>favourite movies: []</td>
+            </tr>
+            <tr>
+                <td>Update user info by ID</td>
+                <td>/users/[id]/</td>
+                <td>PUT</td>
+                <td>A JSON object holding the user’s data being updated.<br>Structured like:<br>{<br>Id: 1<br>name: “Phil Dagaps”,<br>favourite movies: []</td>
+                <td>A JSON object holding data about the new user being added with an ID.<br>Structured like:<br>{<br>id: 1<br>name: “Phil All Dagaps”,<br>favourite movies: []</td>
+            </tr>
+            <tr>
+                <td>Update user favourite movie list</td>
+                <td>/users/[id]/[title]/</td>
+                <td>PUT</td>
+                <td>None</td>
+                <td>A text message indicating the user’s favourite movies list has been updated</td>
+            </tr>
+            <tr>
+                <td>Remove a movie from user’s favourite movie list</td>
+                <td>/users/[id]/[title]/</td>
+                <td>DELETE</td>
+                <td>None</td>
+                <td>A text message indicating the title has been removed from the user’s favourite movies list</td>
+            </tr>
+            <tr>
+                <td>De-register a user</td>
+                <td>/users/[id]/</td>
+                <td>DELETE</td>
+                <td>None</td>
+                <td>A text message indicating the user’s email has been removed from GETFLIX</td>
+            </tr>
+        </tbody>
+    </table>
+    
 </body>
 </html>
