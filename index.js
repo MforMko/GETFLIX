@@ -287,9 +287,9 @@ app.post('/users', (req, res) => {
 */
 
 // Add a movie to a user's list of favorites
-app.post('/users/:Username/movies/:Title', async (req, res) => {
+app.post('/users/:Username/movies/:movieId', async (req, res) => {
     await Users.findOneAndUpdate({ Username: req.params.Username }, {
-       $push: { Favourite_movies: req.params.Title }
+       $push: { FavouriteMovies: req.params.movieId }
      },
      { new: true }) // This line makes sure that the updated document is returned
     .then((updatedUser) => {
@@ -300,6 +300,19 @@ app.post('/users/:Username/movies/:Title', async (req, res) => {
       res.status(500).send("Error: " + err);
     });
   });
+
+// DELETE: Handle DELETE request to remove a movie from a user's favorite movies array
+app.delete('/users/:username/movies/:movieId', async (req, res) => {
+    try {
+    const updatedUser = await Users.findOneAndUpdate({username: req.params.username}, 
+      { $pull: {favouriteMovies: req.params.movieId} }, {new: true})
+      res.json(updatedUser);
+    }
+      catch(error){
+    console.trace("error occurred deleting the movie", error)
+      }
+  })
+  
 
 
 // CREATE: Handle POST request to add a new user
@@ -496,18 +509,8 @@ app.delete('/users/:id/:movieTitle', (req, res) => {
 });
 */
 
-// DELETE: Handle DELETE request to remove a movie from a user's favorite movies array
-app.delete('/users/:username/movies/:title', async (req, res) => {
-    await Users.findOneAndUpdate({username: req.params.username}, 
-        { $pull: {favouriteMovies: req.params.title} }, {new: true})
-    .then ((updatedUser) => {
-        res.json(updatedUser);
-    })
-      .catch((err) => {
-        console.error(err);
-        res.status(500).send("Error: " + err);
-      });
- })
+
+  
 /*
 //DELETE user by username
 app.delete('/users/:id/', (req, res) => {
