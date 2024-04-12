@@ -204,13 +204,13 @@ app.get('/movies/genre/:genreName', passport.authenticate('jwt', {session: false
 
 
 //READ: Handle GET request to retrieve a director by name
-app.get('movies/director/:directorName', passport.authenticate('jwt', {session: false}), async (req, res) => {
-    await Movies.findOne({ Name: req.params.directorName })
+app.get('/movies/director/:directorName', passport.authenticate('jwt', {session: false}), async (req, res) => {
+    await Movies.findOne({ 'Director.Name': req.params.directorName })
       .then((director) => {
         if (director) {
             res.status(200).json(director);
         } else {
-            res.status(400).send('no such director');
+            res.status(404).send('no such director');
         }
       })
       .catch((err) => {
