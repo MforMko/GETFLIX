@@ -19,10 +19,16 @@ app.use(express.urlencoded({ extended: true}));
 
 app.use(bodyParser.json());
 
+const cors = require('cors');
+app.use(cors());
+
 let auth = require('./auth')(app);
 
 const passport = require('passport');
 require('./passport');
+
+const { check, validateResult } = require('express-validator');
+
 
 // create a write stream (in append mode)
 // a ‘log.txt’ file is created in root directory
@@ -134,7 +140,8 @@ app.delete( '/users/:id/:movieTitle', passport.authenticate('jwt', {session: fal
 }
 */
 app.post('/users', async (req, res) =>{
-    await Users.findOne({ Username: req.body.Username })
+  let hashedPassword = Users.hashPassword(req.body.Password);  
+  await Users.findOne({ Username: req.body.Username })
         .then((user) => {
           if (user) {
             return res.status(400).send(req.body.Username + 'already exists');
@@ -150,7 +157,7 @@ app.post('/users', async (req, res) =>{
             .catch((error) => {
               console.error(error);
               res.status(500).send('Error: ' + error);
-            })
+            });
           }
         })
         .catch((error) => {
