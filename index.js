@@ -52,8 +52,25 @@ app.use(morgan('combined', {stream: accessLogStream}));
   FavouriteMovies: []
 }
 */
-app.put("/users/:username", passport.authenticate('jwt', {session: false}), async (req, res) => {
+app.put("/users/:username", [
+  //input validation here
+  check('Username', 'Username is required').isLength({min: 5}),
+  check('Username', 'Username contains non alphanumeric characters not allowed.').isAlphanumeric(),
+  check('Password', 'Password is required').not().isEmpty(),
+  check('Email', 'Email does not appear to be valid').isEmail()
+], passport.authenticate('jwt', {session: false}), async (req, res) => {
   
+    //check validation object for errors
+    let errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(422).json({errors: errors.array()});
+    }
+
+    //condition to check that username in request matches username in request params
+    if(req.user.username !== req.params.username) {
+      return res.status(400).send('Permission denied.');
+    }
+    //condition ends, finds user and updates their info
     await Users.findOneAndUpdate(
       { Username: req.params.username },
       {
@@ -62,10 +79,10 @@ app.put("/users/:username", passport.authenticate('jwt', {session: false}), asyn
           Password: req.body.Password,
           Email: req.body.Email,
           Birthday: req.body.Birthday,
-          FavouriteMovies: req.body.FavouriteMovies,
+          //FavouriteMovies: req.body.FavouriteMovies,
         },
       },
-      { new: true }
+      { new: true } //this line makes sure the updated document is returned
     )
       .then((updatedUser) => {
         res.json(updatedUser);
@@ -75,28 +92,6 @@ app.put("/users/:username", passport.authenticate('jwt', {session: false}), asyn
         res.status(500).send("Error:" + err);
       });
   });
-
-
-/*
-//CREATE: Handle POST request to add a movie to a user's favourite movies array
-app.post('/users/:id/:movieTitle', (req, res) => {
-    // Extract the user ID and movie title from the request parameters
-    const { id, movieTitle } = req.params;
-    
-    // Find the user in the array of users based on the provided ID
-    let user = users.find(user => user.id == id );
-
-    // If the user exists, add the movie title to the user's favourite movies array
-    if (user) {
-        user.favouriteMovies.push(movieTitle);
-        // Respond with status 200 (OK) and a message indicating the movie has been added to the user's array
-        res.status(200).send(`${movieTitle} has been added to user ${id}'s array`);
-    } else {
-        // If no user is found with the provided ID, respond with status 400 (Bad Request) and a message indicating so
-        res.status(400).send('no such user');
-    }
-});
-*/
 
 
 // Add a movie to a user's list of favorites
@@ -139,9 +134,23 @@ app.delete( '/users/:id/:movieTitle', passport.authenticate('jwt', {session: fal
     Birthday: Date
 }
 */
-app.post('/users', async (req, res) =>{
-  let hashedPassword = Users.hashPassword(req.body.Password);  
-  await Users.findOne({ Username: req.body.Username })
+app.post('/users',
+  // Validation logic here for request
+  [
+    check('Username', 'Username is required').isLength({min: 5}),
+    check('Username', 'Username contains non alphanumeric characters not allowed.').isAlphanumeric(),
+    check('Password', 'Password is required').not().isEmpty(),
+    check('Email', 'Email does not appear to be valid').isEmail()
+  ], async (req, res) => {
+  // check the validation object for errors
+    let errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(422).json({ errors: errors.array() });
+    }
+
+    let hashedPassword = Users.hashPassword(req.body.Password);  
+    await Users.findOne({ Username: req.body.Username }) // Search to see if a user with the requested username already exists
         .then((user) => {
           if (user) {
             return res.status(400).send(req.body.Username + 'already exists');
@@ -149,7 +158,7 @@ app.post('/users', async (req, res) =>{
             Users
               .create({
                 Username: req.body.Username,
-                Password: req.body.Password,
+                Password: hashedPassword,
                 Email: req.body.Email,
                 Birthday: req.body.Birthday
               })
