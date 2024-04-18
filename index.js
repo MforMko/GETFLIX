@@ -27,7 +27,7 @@ let auth = require('./auth')(app);
 const passport = require('passport');
 require('./passport');
 
-const { check, validateResult } = require('express-validator');
+const { check, validationResult } = require('express-validator');
 
 
 // create a write stream (in append mode)
