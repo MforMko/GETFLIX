@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: true}));
 app.use(bodyParser.json());
 
 const cors = require('cors');
-let allowedOrigins = ['http://localhost:1234'];
+let allowedOrigins = ['http://localhost:1234', 'https://getflix-29822f4978ec.herokuapp.com/movies'];
 
 app.use(cors({
   origin: (origin, callback) => {
